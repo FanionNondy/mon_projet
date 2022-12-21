@@ -1,0 +1,118 @@
+{% extends 'shop/Base.html' %}
+{% load static %}
+{% block content %}
+	<div class="row">
+		<div class="col-md-12">
+			<form class="card card-sm" enctype="">
+				<div class="card-body row no-gutters align-items-center">
+					<div class="col">
+						<input type="seach" placeholder="Entrez le produit que vous cherchez ?" class="form-control form-control-borderless" name="item-name">
+					</div>
+					<div class="col-auto">
+						<button type="submit" class="btn btn-success">Rechercher</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="row">
+		{% for product in obj %}
+		<div class="col-md-3">
+			<div class="card">
+				<img class="card-img-top" src="{{product.image.url}}" alt="Card image cap">
+				<div class="card-body">
+					<div id="aa{{product.id}}" class="card-title">{{product.titre}}</div>
+					<div id="price{{product.id}}" class="card-text">{{product.price}}</div>
+					<a href="{% url 'detail' product.id %}" class=" btn btn-warning"> Voire</a>
+					<a class="btn fan btn-primary" href="#" id="{{product.id}}">Ajouter</a> 
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+	<div class="row mt-3" >
+    <div class="col-md-3 offset-md-4" >
+        <ul class="pagination">
+            {% if obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ obj.previous_page_number}}"> Precendent</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <a class="page-link" href="?page ={{ obj.number}}">{{ obj.number}}</a>
+            </li>
+
+             {% if obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ obj.next_page_number}}"> suivant</a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </div>
+	</div>
+	
+	
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript">
+		console.log("uezrzer");
+
+		if( localStorage.getItem('panier') == null){
+            var panier={};
+        }
+        else{
+            panier = JSON.parse(localStorage.getItem('panier'));
+        }
+         // $('.fan').on('click', function(e){
+         //    console.log("ajouter");
+        // })
+        $(document).on('click','.fan',function(){
+            console.log('Ajouter');
+            var item_id = this .id.toString();
+            console.log(item_id);
+            if(panier[item_id] != undefined){
+            	quantite = panier[item_id][0]+1;
+                panier[item_id][0] = quantite;
+                panier[item_id][2] +=parseFloat(document.getElementById('price'+item_id).innerHTML);
+            }
+            else{
+                quantite = 1;
+                prix=parseFloat(document.getElementById('price'+item_id).innerHTML);
+                nom =  document.getElementById("aa"+item_id).innerHTML;
+                panier[item_id]=[quantite,nom,prix];
+            }
+            console.log(panier);
+            localStorage.setItem('panier', JSON.stringify(panier));
+            document.getElementById("panier").innerHTML ="PANIER ("+ Object.keys(panier).length+")";
+           
+
+        });
+		// $(function () {
+  // 			$('[data-toggle="popover"]').popover();
+  // 			document.getElementById('panier').setAttribute('data-content','<h5>Voici votre liste</h5>');
+		// });
+		AfficherList(panier);
+		function AfficherList(panier){
+			var panierString="";
+			panierString += "<h5>Voici votre liste</h5>";
+			var index=1;
+
+			for (var x in panier) {
+				panierString += index;
+				panierString += document.getElementById("aa"+x).innerHTML + " Qte "+panier[x][0] + "</br>";
+				index +=1;
+			}
+			// panierString +="<a href='checkout' class='btn btn-primary'>Checkout</a>"
+			panierString +="<a href='{% url 'checkout' %}' class='btn btn-primary'>Checkout</a>"
+			$('[data-toggle="popover"]').popover();
+  			document.getElementById('panier').setAttribute('data-content',panierString);
+		}
+	</script>
+{% endblock %}
+

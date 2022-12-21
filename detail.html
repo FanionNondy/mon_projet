@@ -1,0 +1,18 @@
+{% extends 'shop/Base.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div>
+            <img src="{{obj.image.url}}" alt="" height="700px" width="700px">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="text-info display-4">Nom :{{obj.titre}}</div>
+        <div class="text-warning">Prix : $ {{obj.price}}</div>
+        <div>Detail : {{obj.description}}</div>
+        <a href="" class="btn btn-success">Acheter</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+{% endblock %}
